@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual Environment (Too big, do not upload)
+.venv/
+venv/
+env/
+
+# Streamlit Secrets (CONTAINS YOUR PASSWORDS - CRITICAL)
+.streamlit/secrets.toml
+
+# Google Auth Files
+client_secret.json
+token.json
+
+# Environment variables
+.env
+
+# VS Code settings
+.vscode/
