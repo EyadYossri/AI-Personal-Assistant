@@ -7,8 +7,9 @@ from google.auth.transport.requests import Request
 
 
 # Redirect URI
-REDIRECT_URI = "http://localhost:8501/oauth2callback"  # Local dev
+#REDIRECT_URI = "http://localhost:8501/oauth2callback"  # Local dev
 # REDIRECT_URI = "https://<your-space>.hf.space/oauth2callback"  # HuggingFace
+REDIRECT_URI = "https://ai-personal-assistantv1.streamlit.app" #Streamlit
 
 # OAuth scopes
 SCOPES = [
