@@ -2,11 +2,40 @@ import streamlit as st
 from auth import get_auth_url, exchange_code, save_credentials, get_credentials
 from utils import init_session
 from graph import run_agent
+import traceback
 
+# --------------------- Error UI Helpers ---------------------
+def show_error(message: str, details: str = None):
+    st.error(f"❌ **Error:** {message}")
+    with st.expander("Show error details"):
+        if details:
+            st.code(details)
+        else:
+            st.write("No further details.")
+
+def error_banner(text):
+    st.markdown(
+        f"""
+        <div style="
+            background-color:#ffe6e6;
+            color:#990000;
+            padding:15px;
+            border-radius:12px;
+            border-left: 8px solid #ff4d4d;
+            font-size:16px;
+            margin-bottom:15px;
+        ">
+            ❌ {text}
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+# --------------------- PAGE SETUP ---------------------
 st.set_page_config(page_title="AI Personal Assistant", page_icon="🤖")
 init_session()
 
-# --- CSS to remove top spacing for a cleaner look ---
 st.markdown("""
 <style>
     .block-container {padding-top: 2rem;}
@@ -15,14 +44,13 @@ st.markdown("""
 
 st.title("🤖 AI Personal Assistant")
 
-# --- OAuth Login Flow ---
 creds = get_credentials()
 
+# --------------------- LOGIN FLOW ---------------------
 if not creds:
     st.info("Login with Google to continue.")
     auth_url = get_auth_url()
-    
-    # Modern Google Login Button
+
     st.markdown(f"""
         <div style="display: flex; justify-content: center; margin: 20px;">
             <a href="{auth_url}" target="_self" style="
@@ -53,34 +81,36 @@ if not creds:
             save_credentials(creds)
             st.query_params.clear()
             st.rerun()
+
         except Exception as e:
-            st.error(f"Error: {e}")
+            tb = traceback.format_exc()
+            error_banner("Google login failed.")
+            show_error(str(e), tb)
 
 else:
-    # --- 1. DISPLAY CHAT HISTORY FIRST ---
-    # This loop renders existing messages in bubbles
+    # --------------------- CHAT HISTORY ---------------------
     for role_icon, content in st.session_state["messages"]:
-        # Map your icons to Streamlit roles
         role = "user" if role_icon == "🧑" else "assistant"
         avatar = "🧑‍💻" if role == "user" else "🤖"
         
         with st.chat_message(role, avatar=avatar):
             st.markdown(content)
 
-    # --- 2. CHAT INPUT (Pinned to Bottom) ---
+    # --------------------- PROMPT INPUT ---------------------
     if prompt := st.chat_input("Ask me anything (email, calendar, drive...)?"):
-        
-        # Display User Message Immediately
+
         with st.chat_message("user", avatar="🧑‍💻"):
             st.markdown(prompt)
-        # Add to history
         st.session_state["messages"].append(("🧑", prompt))
 
-        # Generate and Display Assistant Response
         with st.chat_message("assistant", avatar="🤖"):
             with st.spinner("Processing..."):
-                response = run_agent(prompt)
-                st.markdown(response)
-        
-        # Add to history
-        st.session_state["messages"].append(("🤖", response))
+                try:
+                    response = run_agent(prompt)
+                    st.markdown(response)
+                    st.session_state["messages"].append(("🤖", response))
+
+                except Exception as e:
+                    tb = traceback.format_exc()
+                    error_banner("The assistant encountered an error.")
+                    show_error("Something went wrong while processing your request.", tb)
