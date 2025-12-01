@@ -4,7 +4,7 @@
 
 # 🤖 AI Personal Assistant
 
-**AI Workspace Assistant** is a smart, context-aware personal agent built with **Streamlit** and **LangGraph**. It acts as a bridge between **Google's Gemini LLM** and your **Google Workspace**, allowing you to manage emails, files, and calendar events using natural language.
+** AI Personal Assistant** is a smart, context-aware personal agent built with **Streamlit** and **LangGraph**. It acts as a bridge between **Google's Gemini LLM** and your **Google Workspace**, allowing you to manage emails, files, and calendar events using natural language.
 
 It automates daily tasks:
 - 📅 **Calendar:** Smart scheduling with timezone awareness (e.g., "Meeting tomorrow at 4 PM").
